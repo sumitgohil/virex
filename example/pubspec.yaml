@@ -1,0 +1,28 @@
+name: virex_example
+description: Battle-tested example app for Virex.
+publish_to: none
+
+environment:
+  sdk: ^3.10.0
+
+dependencies:
+  flutter:
+    sdk: flutter
+  virex:
+    path: ../
+  virex_devtools:
+    path: ../packages/virex_devtools
+  virex_forms:
+    path: ../packages/virex_forms
+  virex_observability:
+    path: ../packages/virex_observability
+  virex_persist:
+    path: ../packages/virex_persist
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+
+flutter:
+  uses-material-design: true

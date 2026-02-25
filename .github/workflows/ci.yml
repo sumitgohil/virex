@@ -1,0 +1,93 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+jobs:
+  root:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: 3.38.2
+          channel: stable
+          cache: true
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Install example dependencies
+        run: flutter pub get
+        working-directory: example
+
+      - name: Static analysis
+        run: flutter analyze
+
+      - name: Unit and widget tests with coverage (fast tier)
+        run: flutter test --coverage --exclude-tags scale
+
+      - name: Enforce minimum coverage
+        run: dart run tool/check_coverage.dart coverage/lcov.info 70
+
+      - name: Benchmark smoke test
+        run: dart run benchmark/virex_benchmark.dart
+
+      - name: Enforce performance budget
+        run: dart run tool/check_performance_budget.dart benchmark/performance_budget.json -
+
+  packages:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        package:
+          - packages/virex_devtools
+          - packages/virex_persist
+          - packages/virex_riverpod_bridge
+          - packages/virex_bloc_bridge
+          - packages/virex_observability
+          - packages/virex_testkit
+          - packages/virex_router_bridge
+          - packages/virex_forms
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: 3.38.2
+          channel: stable
+          cache: true
+
+      - name: Setup Dart
+        uses: dart-lang/setup-dart@v1
+
+      - name: Resolve package dependencies
+        run: dart pub get
+        working-directory: ${{ matrix.package }}
+
+      - name: Analyze package
+        run: dart analyze
+        working-directory: ${{ matrix.package }}
+
+      - name: Test pure Dart package
+        if: matrix.package != 'packages/virex_devtools'
+        run: dart test
+        working-directory: ${{ matrix.package }}
+
+      - name: Test Flutter package
+        if: matrix.package == 'packages/virex_devtools'
+        run: flutter test
+        working-directory: ${{ matrix.package }}

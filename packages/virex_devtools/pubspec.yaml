@@ -1,0 +1,24 @@
+name: virex_devtools
+description: DevTools widgets and inspector surfaces for Virex.
+version: 0.1.0
+homepage: https://github.com/virex-dev/virex
+repository: https://github.com/virex-dev/virex
+issue_tracker: https://github.com/virex-dev/virex/issues
+publish_to: none
+
+environment:
+  sdk: ^3.10.0
+  flutter: ">=3.38.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  virex:
+    path: ../../
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+
+flutter:

@@ -1,0 +1,88 @@
+name: Release
+
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - 'v*.*.*'
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 240
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: 3.38.2
+          channel: stable
+          cache: true
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Analyze
+        run: flutter analyze
+
+      - name: Test (default tier)
+        run: flutter test --exclude-tags scale
+
+      - name: Test (scale tier)
+        run: flutter test --tags scale
+
+      - name: Enforce performance budget
+        run: dart run tool/check_performance_budget.dart benchmark/performance_budget.json -
+
+      - name: Verify devtools package
+        run: |
+          cd packages/virex_devtools
+          dart pub get
+          dart analyze
+          flutter test
+
+      - name: Verify persist package
+        run: |
+          cd packages/virex_persist
+          dart pub get
+          dart analyze
+          dart test
+
+      - name: Verify ecosystem packages
+        run: |
+          for pkg in \
+            packages/virex_riverpod_bridge \
+            packages/virex_bloc_bridge \
+            packages/virex_observability \
+            packages/virex_testkit \
+            packages/virex_router_bridge \
+            packages/virex_forms
+          do
+            cd "$pkg"
+            dart pub get
+            dart analyze
+            dart test
+            cd -
+          done
+
+      - name: Pub dry run
+        run: dart pub publish --dry-run
+
+  github-release:
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-latest
+    needs: verify
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Publish GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          generate_release_notes: true

@@ -1,0 +1,18 @@
+name: virex_persist
+description: Persistence primitives for Virex signals.
+version: 0.1.0
+homepage: https://github.com/virex-dev/virex
+repository: https://github.com/virex-dev/virex
+issue_tracker: https://github.com/virex-dev/virex/issues
+publish_to: none
+
+environment:
+  sdk: ^3.10.0
+
+dependencies:
+  virex:
+    path: ../../
+
+dev_dependencies:
+  lints: ^6.0.0
+  test: ^1.25.0

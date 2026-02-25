@@ -1,0 +1,9 @@
+{
+  "max_us_per_op": {
+    "signal write throughput": 0.20,
+    "batch flush latency": 0.25,
+    "computed chain propagation": 12.00,
+    "effect loop guard overhead": 6.00,
+    "rebuild count simulation": 0.10
+  }
+}

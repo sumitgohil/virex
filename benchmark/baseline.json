@@ -1,0 +1,10 @@
+{
+  "updated_at_utc": "2026-02-23T00:00:00.000Z",
+  "metrics_us_per_op": {
+    "signal write throughput": 0.1081,
+    "batch flush latency": 0.1375,
+    "computed chain propagation": 8.596,
+    "effect loop guard overhead": 3.0,
+    "rebuild count simulation": 0.0
+  }
+}
